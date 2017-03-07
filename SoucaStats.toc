@@ -1,0 +1,7 @@
+## Interface: 70100
+## Title: Souca's Stats
+## Author: Souca <itssouca@gmail.com>
+## Version: 0.0.1
+## SavedVariablesPerCharacter: SSEventLog
+
+main.lua
