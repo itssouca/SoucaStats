@@ -1,4 +1,4 @@
-version = "00009"
+version = "00010"
 Listening_EventFrame = nil
 
 print( version )
@@ -10,20 +10,53 @@ logChatFrame = DEFAULT_CHAT_FRAME
 
 -- Make our frame for event registration
 local loaded = false
+local loggedIn = false
 
+
+-- build continent lookup map
+--local k, v
+--local continentNames = { GetMapContinents() }
+--local continentMap = {}
+--
+--for k, v in pairs( continentNames ) do
+--	continentMap[k] = v
+--	logChatFrame:AddMessage( "Continent[" .. k .. "]: " .. continentNames[k] )
+--end
+
+local continentMap = {}
+continentMap[-1] = "Twisting Nether"
+continentMap[0] = "Null Space"
+continentMap[1] = "Kalimdor"
+continentMap[2] = "Eastern Kingdoms"
+continentMap[3] = "Outland"
+continentMap[4] = "Northrend"
+continentMap[5] = "Maelstrom"
+continentMap[6] = "Pandaria"
+continentMap[7] = "Draenor"
+continentMap[8] = "Broken Isles"
+
+
+
+--for i = 0, 7 do
+-- 	logChatFrame:AddMessage( "Continent[" .. i .. "]: " .. continentNames[i] )
+--end
+-- logChatFrame:AddMessage( "Continent[" .. 0 .. "]: " .. continentNames[0] )
 
 Listening_EventFrame = CreateFrame( "Frame" )
 
 -- Wait to be loaded
 Listening_EventFrame:RegisterEvent( "ADDON_LOADED" )
+-- Listening_EventFrame:RegisterEvent( "UPDATE_CHAT_WINDOWS" )
+
 
 
 
 
 Listening_EventFrame:SetScript( "OnEvent",
 	function( self, event, ... )
+--logChatFrame:AddMessage( "Event: |cFFFF0000" .. event .. "|r Time: |cFF00FF00" .. date( "%c", GetServerTime() ) .. "|r" )
+
 local prettyLoaded = loaded and "Yes" or "No"
---logChatFrame:AddMessage( "onEvent " .. event )
 --logChatFrame:AddMessage( "loaded " .. prettyLoaded )
 
 		if ( loaded == false ) then
@@ -37,18 +70,25 @@ local prettyLoaded = loaded and "Yes" or "No"
 			end
 		else
 			local mapX, mapY = GetPlayerMapPosition( "player" )
-			local continent = GetCurrentMapContinent()
+			local continent = GetCurrentMapContinent() .. "-" .. continentMap[GetCurrentMapContinent()]
 			local zoneName = GetRealZoneText() or "Zone"
 			local subZoneName = GetSubZoneText() or "Sub Zone"
 			local serverTime = GetServerTime()
 			local prettyTime = date( "%c", serverTime )
 			local onTaxi = UnitOnTaxi( "player" ) and "Yes" or "No"
 			
-			local logHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
+			local logHeader
+
+			if ( loggedIn == true ) then
+				logHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
 						"< P Time: >" .. prettyTime .. "< Lvl: >" .. UnitLevel( "player" ) .. "< XP: >" .. UnitXP( "player" ) ..
 						"< Lvl XP: >" .. UnitXPMax( "player" ) .. "< Continent: >" .. continent .. "< Zone: >" ..
 						zoneName .. "::" .. subZoneName .. "< Loc: (" ..
 						mapX .. "," .. mapY .. ") Taxi: >" .. onTaxi .. "<"
+			else
+				logHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
+						"< P Time: >" .. prettyTime .. "<"
+			end
 
 						
 						
@@ -132,10 +172,33 @@ local prettyLoaded = loaded and "Yes" or "No"
 				end
 				-- RequestTimePlayed()
 
+
+			elseif ( event == "UPDATE_CHAT_WINDOWS" ) then		
+				updateLoggingChatWindow()
+				local logEntry = logHeader					
+
+				table.insert( SSEventLog.logs, logEntry )
+				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+
+
+			elseif ( event == "PLAYER_LOGIN" ) then		
+				local logEntry = logHeader					
+				loggedIn = true
+
+				table.insert( SSEventLog.logs, logEntry )
+				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+
+
+			elseif ( event == "PLAYER_LOGOUT" ) then		
+				local logEntry = logHeader					
+				loggedIn = false
+				
+				table.insert( SSEventLog.logs, logEntry )
+				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+
+
 			-- Generic log entries go here
-			elseif ( 	event == "PLAYER_LOGIN" or
-						event == "PLAYER_LOGOUT" or
-						event == "UNIT_QUEST_LOG_CHANGED" or
+			elseif ( 	event == "UNIT_QUEST_LOG_CHANGED" or
 						event == "ZONE_CHANGED_NEW_AREA" or
 						event == "ZONE_CHANGED" ) then		
 
@@ -152,9 +215,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 	)
 
 
-function finishInit()
-
-	-- Start logging to the preffered chat pane
+function updateLoggingChatWindow()
 	for i = 1, NUM_CHAT_WINDOWS do
 	 	if GetChatWindowInfo( i ) == "SS Log" then
 			logChatFrame = _G["ChatFrame" .. i]
@@ -162,9 +223,15 @@ function finishInit()
 			break
 		end
 	end
+end
+
+
+function finishInit()
+	-- Start logging to the preffered chat pane
+	-- updateLoggingChatWindow()
 
 	-- Setup SavedVariables table
-	logChatFrame:AddMessage( "SSEventLog Type" .. type( SSEventLog ) )
+	logChatFrame:AddMessage( "SSEventLog Type: " .. type( SSEventLog ) )
 
 	if type( SSEventLog ) ~= "table" then  
 		SSEventLog = {}
@@ -173,7 +240,7 @@ function finishInit()
 		logChatFrame:AddMessage( "SSEventLog Loaded" )
 	end
 
-	logChatFrame:AddMessage( "SSEventLog.logs Type" .. type( SSEventLog.logs ) )
+	logChatFrame:AddMessage( "SSEventLog.logs Type: " .. type( SSEventLog.logs ) )
 
 	if type( SSEventLog.logs ) ~= "table" then
 		SSEventLog.logs = {}
@@ -205,25 +272,36 @@ function finishInit()
 
 
 	-- Register Events
+
+	-- UI Events
+	Listening_EventFrame:RegisterEvent( "UPDATE_CHAT_WINDOWS" )
+
+	-- Player status events
 	Listening_EventFrame:RegisterEvent( "PLAYER_ALIVE" )
 	Listening_EventFrame:RegisterEvent( "PLAYER_DEAD" )
 	Listening_EventFrame:RegisterEvent( "PLAYER_UNGHOST" )
 	Listening_EventFrame:RegisterEvent( "PLAYER_CAMPING" )
 
+	-- Session events
 	Listening_EventFrame:RegisterEvent( "PLAYER_LOGIN" )
 	Listening_EventFrame:RegisterEvent( "PLAYER_LOGOUT" )
 
+	-- Leveling events
 	Listening_EventFrame:RegisterEvent( "PLAYER_LEVEL_UP" )
 
+	-- Server query response events
 	Listening_EventFrame:RegisterEvent( "TIME_PLAYED_MSG" )
 
+	-- Quest events
 	Listening_EventFrame:RegisterEvent( "QUEST_ACCEPTED" )
 	Listening_EventFrame:RegisterEvent( "QUEST_REMOVED" )
 	Listening_EventFrame:RegisterEvent( "QUEST_TURNED_IN" )
 	-- Listening_EventFrame:RegisterEvent( "UNIT_QUEST_LOG_CHANGED" )
 
+	-- Player status events
 	Listening_EventFrame:RegisterEvent( "PLAYER_FLAGS_CHANGED" )
 
+	-- Location events
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED" )
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
 end
