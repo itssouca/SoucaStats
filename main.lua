@@ -1,4 +1,4 @@
-version = "00011"
+version = "00012"
 Listening_EventFrame = nil
 
 print( version )
@@ -71,23 +71,30 @@ Listening_EventFrame:SetScript( "OnEvent",
 			end
 		else
 			local mapX, mapY = GetPlayerMapPosition( "player" )
-			local continent = GetCurrentMapContinent() .. "-" .. continentMap[GetCurrentMapContinent()]
+			local continentID = GetCurrentMapContinent()
+			local continent = continentID .. "-" .. continentMap[continentID]
 			local zoneName = GetRealZoneText() or "Zone"
 			local subZoneName = GetSubZoneText() or "Sub Zone"
 			local serverTime = GetServerTime()
 			local prettyTime = date( "%c", serverTime )
-			local onTaxi = UnitOnTaxi( "player" ) and "Yes" or "No"
+			local onTaxi = UnitOnTaxi( "player" ) and "Y" or "N"
 			
 			local logHeader
+			local displayHeader
 
 			if ( loggedIn == true ) then
-				logHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
+				logHeader = event .. "|" .. serverTime .. "|" .. UnitLevel( "player" ) .. "|" ..
+						UnitXP( "player" ) .. "|" .. UnitXPMax( "player" ) .. "|" .. continentID ..
+						"|" .. zoneName .. "|" .. subZoneName .. "|" ..
+						mapX .. "," .. mapY .. "|" .. onTaxi
+				displayHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
 						"< P Time: >" .. prettyTime .. "< Lvl: >" .. UnitLevel( "player" ) .. "< XP: >" .. UnitXP( "player" ) ..
 						"< Lvl XP: >" .. UnitXPMax( "player" ) .. "< Continent: >" .. continent .. "< Zone: >" ..
 						zoneName .. "::" .. subZoneName .. "< Loc: (" ..
 						mapX .. "," .. mapY .. ") Taxi: >" .. onTaxi .. "<"
 			else
-				logHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
+				logHeader = event .. "|" .. serverTime
+				displayHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
 						"< P Time: >" .. prettyTime .. "<"
 			end
 
@@ -96,11 +103,10 @@ Listening_EventFrame:SetScript( "OnEvent",
 			if (	event == "PLAYER_ALIVE" or
 					event == "PLAYER_DEAD" or
 					event == "PLAYER_UNGHOST" or
-					event == "PLAYER_CAMPING" ) then			
-				local logEntry = logHeader					
+					event == "PLAYER_CAMPING" ) then				
 
-				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				table.insert( SSEventLog.logs, logHeader )
+				logChatFrame:AddMessage( "SS: " .. displayHeader  )
 
 				RequestTimePlayed()
 
@@ -108,10 +114,11 @@ Listening_EventFrame:SetScript( "OnEvent",
 			elseif ( event == "PLAYER_LEVEL_UP" ) then
 				local newLevel = ...
 				
-				local logEntry = logHeader .. " ### |cFF0099FFNew Lvl: >|cFFDD33FF" .. newLevel .. "|cFF0099FF<|r"
+				local logEntry = logHeader .. "|" .. newLevel
+				local displayEntry = displayHeader .. " ### |cFF0099FFNew Lvl: >|cFFDD33FF" .. newLevel .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry )
+				logChatFrame:AddMessage( "SS: " .. displayEntry )
 
 				RequestTimePlayed()
 
@@ -119,21 +126,23 @@ Listening_EventFrame:SetScript( "OnEvent",
 			elseif ( event == "TIME_PLAYED_MSG" ) then
 				local totalTime, levelTime = ...
 
-				local logEntry = logHeader .. " ### |cFF0099FFPlayed: >|cFFDD33FF" .. totalTime ..
+				local logEntry = logHeader .. "|" .. totalTime .. "|" .. levelTime
+				local displayEntry = displayHeader .. " ### |cFF0099FFPlayed: >|cFFDD33FF" .. totalTime ..
 									"|cFF0099FF< Lvl Played: >|cFFDD33FF" .. levelTime .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
 
 
 			elseif ( event == "QUEST_ACCEPTED" ) then
 				local questSlot, questId = ...		
 
-				local logEntry = logHeader .. " ### |cFF0099FFQuest Slot: >|cFFDD33FF" .. questSlot ..
+				local logEntry = logHeader .. "|" .. questSlot .. "|" .. questId
+				local displayEntry = displayHeader .. " ### |cFF0099FFQuest Slot: >|cFFDD33FF" .. questSlot ..
 						"|cFF0099FF< Quest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
 				
 				RequestTimePlayed()
 			
@@ -141,10 +150,11 @@ Listening_EventFrame:SetScript( "OnEvent",
 			elseif ( event == "QUEST_REMOVED" ) then
 				local questId = ...		
 
-				local logEntry = logHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"			
+				local logEntry = logHeader .. "|" .. questId			
+				local displayEntry = displayHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"			
 
 				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
 
 				RequestTimePlayed()
 
@@ -152,11 +162,13 @@ Listening_EventFrame:SetScript( "OnEvent",
 			elseif ( event == "QUEST_TURNED_IN" ) then
 				local questId, questXP, questCopper = ...		
 
-				local logEntry = logHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId .. "|cFF000FF< QuestXP: >" .. questXP ..
-						"|cFF0099FF< QuestCopper: >|cFFDD33FF" .. questCopper .. "|cFF0099FF<|r"			
+				local logEntry = logHeader .. "|" .. questId .. "|" .. questXP .. "|" .. questCopper
+				local displayEntry = displayHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId ..
+						"|cFF000FF< QuestXP: >" .. questXP .. "|cFF0099FF< QuestCopper: >|cFFDD33FF" ..
+						questCopper .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
 
 				RequestTimePlayed()
 
@@ -165,39 +177,37 @@ Listening_EventFrame:SetScript( "OnEvent",
 				local unit = ...
 				
 				if ( unit == "player" ) then
-					local afkState = UnitIsAFK( "player" ) and "Yes" or "No"
+					local afkState = UnitIsAFK( "player" ) and "Y" or "N"
 
-					local logEntry = logHeader .. " ### |cFF0099FFAFK: >|cFFDD33FF" .. afkState ..
-										"|cFF0099FF<|r"			
+					local logEntry = logHeader .. "|" .. afkState
+					local displayEntry = displayHeader .. " ### |cFF0099FFAFK: >|cFFDD33FF" .. afkState ..
+										"|cFF0099FF<|r"	
 
 					table.insert( SSEventLog.logs, logEntry )
-					logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+					logChatFrame:AddMessage( "SS" .. displayEntry  )
 				end
 				-- RequestTimePlayed()
 
 
 			elseif ( event == "UPDATE_CHAT_WINDOWS" ) then		
-				updateLoggingChatWindow()
-				local logEntry = logHeader					
+				updateLoggingChatWindow()	
 
-				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				table.insert( SSEventLog.logs, logHeader )
+				logChatFrame:AddMessage( "SS: " .. displayHeader  )
 
 
-			elseif ( event == "PLAYER_LOGIN" ) then		
-				local logEntry = logHeader					
+			elseif ( event == "PLAYER_LOGIN" ) then						
 				loggedIn = true
 
-				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				table.insert( SSEventLog.logs, logHeader )
+				logChatFrame:AddMessage( "SS: " .. displayHeader  )
 
 
-			elseif ( event == "PLAYER_LOGOUT" ) then		
-				local logEntry = logHeader					
+			elseif ( event == "PLAYER_LOGOUT" ) then						
 				loggedIn = false
 				
-				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+				table.insert( SSEventLog.logs, logHeader )
+				logChatFrame:AddMessage( "SS: " .. displayHeader  )
 
 
 			-- Generic log entries go here
@@ -205,16 +215,13 @@ Listening_EventFrame:SetScript( "OnEvent",
 						event == "ZONE_CHANGED_NEW_AREA" or
 						event == "ZONE_CHANGED" ) then		
 
-				local logEntry = logHeader		
-
-				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )	
+				table.insert( SSEventLog.logs, logHeader )
+				logChatFrame:AddMessage( "SS: " .. displayHeader  )	
 
 			else
-				local logEntry = logHeader		
-
-				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )	
+				
+				table.insert( SSEventLog.logs, logHeader )
+				logChatFrame:AddMessage( "SS: " .. displayHeader  )	
 			end
 
 		end 
@@ -230,16 +237,24 @@ Debugging_EventFrame:SetScript( "OnEvent",
 		local serverTime = GetServerTime()
 		local prettyTime = date( "%c", serverTime )
 		
-		local logEntry = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
+		local logEntry = event .. "|" .. serverTime
+		local displayEntry = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
 					"< P Time: >" .. prettyTime .. "< ###"
 		
 		local k, v
-		for k, v in pairs({...}) do
-			logEntry = logEntry .. " |cFF0099FFarg[|cFFDD33FF" .. k .. "|cFF0099FF]: >|cFFDD33FF" .. v .. "|cFF0099FF<|r"
+		for k, v in pairs( {...} ) do
+			if ( type( v ) == "boolean" ) then
+				prettyV = v and "true" or "false"
+			else
+				prettyV = v
+			end
+
+			logEntry = logEntry .. "|" .. k .. "*" .. prettyV
+			displayEntry = displayEntry .. " |cFF0099FFarg[|cFFDD33FF" .. k .. "|cFF0099FF]: >|cFFDD33FF" .. prettyV .. "|cFF0099FF<|r"
 		end
 
 		table.insert( SSEventLog.debugLogs, logEntry )
-		logChatFrame:AddMessage( "Debug: " .. logEntry  )
+		logChatFrame:AddMessage( "Debug: " .. displayEntry  )
 	end
 	)
 
@@ -295,13 +310,17 @@ function finishInit()
 	elseif ( unitSex == 3 ) then charSex = "F"
 	end
 
-	local logEntry = "|cFFFF0000SS_INFO_VERSION|r - Time: >" .. serverTime .. "< P Time: >" .. prettyTime ..
+	local logEntry = "SS_INFO_VERSION|" .. serverTime .. "|" .. version .. "|" .. UnitName( "player" ) .. "|" ..
+						GetRealmName() .. "|" .. UnitClass( "player" ) .. "|" .. UnitRace( "player" ) ..
+						"|" .. factionGroup .. "|" .. UnitSex( "player" )
+	local displayEntry = "|cFFFF0000SS_INFO_VERSION|r - Time: >" .. serverTime .. "< P Time: >" .. prettyTime ..
 						"< Version: >" .. version .. "< Char: >" .. UnitName( "player" ) .. "< Realm: >" ..
 						GetRealmName() .. "< Class: >" .. UnitClass( "player" ) .. "< Race: >" .. UnitRace( "player" ) ..
 						"< Faction: >" .. factionGroup .. "< Sex: >" .. charSex .. "<"
 
-	table.insert( SSEventLog, logEntry )
-	logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
+
+	table.insert( SSEventLog.logs, logEntry )
+	logChatFrame:AddMessage( "SS: " .. displayEntry  )
 
 	-- Get rid of the addon event first
 	Listening_EventFrame:UnregisterEvent( "ADDON_LOADED" )
