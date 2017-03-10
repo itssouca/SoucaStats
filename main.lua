@@ -1,4 +1,4 @@
-version = "00010"
+version = "00011"
 Listening_EventFrame = nil
 
 print( version )
@@ -42,7 +42,8 @@ continentMap[8] = "Broken Isles"
 --end
 -- logChatFrame:AddMessage( "Continent[" .. 0 .. "]: " .. continentNames[0] )
 
-Listening_EventFrame = CreateFrame( "Frame" )
+Listening_EventFrame = CreateFrame( "Frame", "listeningFrame" )
+Debugging_EventFrame = CreateFrame( "Frame", "debuggingFrame" )
 
 -- Wait to be loaded
 Listening_EventFrame:RegisterEvent( "ADDON_LOADED" )
@@ -56,8 +57,8 @@ Listening_EventFrame:SetScript( "OnEvent",
 	function( self, event, ... )
 --logChatFrame:AddMessage( "Event: |cFFFF0000" .. event .. "|r Time: |cFF00FF00" .. date( "%c", GetServerTime() ) .. "|r" )
 
-local prettyLoaded = loaded and "Yes" or "No"
---logChatFrame:AddMessage( "loaded " .. prettyLoaded )
+	local prettyLoaded = loaded and "Yes" or "No"
+	--logChatFrame:AddMessage( "loaded " .. prettyLoaded )
 
 		if ( loaded == false ) then
 			if ( event == "ADDON_LOADED") then
@@ -107,7 +108,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 			elseif ( event == "PLAYER_LEVEL_UP" ) then
 				local newLevel = ...
 				
-				local logEntry = logHeader .. " ### |cFF0000FFNew Lvl: >" .. newLevel .. "<|r"
+				local logEntry = logHeader .. " ### |cFF0099FFNew Lvl: >|cFFDD33FF" .. newLevel .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "Souca Stats: " .. logEntry )
@@ -118,7 +119,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 			elseif ( event == "TIME_PLAYED_MSG" ) then
 				local totalTime, levelTime = ...
 
-				local logEntry = logHeader .. " ### |cFF0099FFPlayed: >" .. totalTime .. "< Lvl Played: >" .. levelTime .. "<|r"
+				local logEntry = logHeader .. " ### |cFF0099FFPlayed: >|cFFDD33FF" .. totalTime ..
+									"|cFF0099FF< Lvl Played: >|cFFDD33FF" .. levelTime .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
@@ -127,8 +129,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 			elseif ( event == "QUEST_ACCEPTED" ) then
 				local questSlot, questId = ...		
 
-				local logEntry = logHeader .. " ### |cFF0000FFQuest Slot: >" .. questSlot ..
-						"< Quest ID: >" .. questId .. "<|r"
+				local logEntry = logHeader .. " ### |cFF0099FFQuest Slot: >|cFFDD33FF" .. questSlot ..
+						"|cFF0099FF< Quest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"
 
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
@@ -139,7 +141,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 			elseif ( event == "QUEST_REMOVED" ) then
 				local questId = ...		
 
-				local logEntry = logHeader .. " ### |cFF0000FFQuest ID: >" .. questId .. "<|r"			
+				local logEntry = logHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"			
 
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
@@ -150,8 +152,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 			elseif ( event == "QUEST_TURNED_IN" ) then
 				local questId, questXP, questCopper = ...		
 
-				local logEntry = logHeader .. " ### |cFF0000FFQuest ID: >" .. questId .. "< QuestXP: >" .. questXP ..
-						"< QuestCopper: >" .. questCopper .. "<|r"			
+				local logEntry = logHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId .. "|cFF000FF< QuestXP: >" .. questXP ..
+						"|cFF0099FF< QuestCopper: >|cFFDD33FF" .. questCopper .. "|cFF0099FF<|r"			
 
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
@@ -165,7 +167,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 				if ( unit == "player" ) then
 					local afkState = UnitIsAFK( "player" ) and "Yes" or "No"
 
-					local logEntry = logHeader .. " ### |cFF0000FFAFK: >" .. afkState .. "<|r"			
+					local logEntry = logHeader .. " ### |cFF0099FFAFK: >|cFFDD33FF" .. afkState ..
+										"|cFF0099FF<|r"			
 
 					table.insert( SSEventLog.logs, logEntry )
 					logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )
@@ -207,10 +210,36 @@ local prettyLoaded = loaded and "Yes" or "No"
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )	
 
+			else
+				local logEntry = logHeader		
+
+				table.insert( SSEventLog.logs, logEntry )
+				logChatFrame:AddMessage( "Souca Stats: " .. logEntry  )	
 			end
 
 		end 
 		
+	end
+	)
+
+
+Debugging_EventFrame:SetScript( "OnEvent",
+	function( self, event, ... )
+		--logChatFrame:AddMessage( "Event: |cFFFF0000" .. event .. "|r Time: |cFF00FF00" .. date( "%c", GetServerTime() ) .. "|r" )
+
+		local serverTime = GetServerTime()
+		local prettyTime = date( "%c", serverTime )
+		
+		local logEntry = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
+					"< P Time: >" .. prettyTime .. "< ###"
+		
+		local k, v
+		for k, v in pairs({...}) do
+			logEntry = logEntry .. " |cFF0099FFarg[|cFFDD33FF" .. k .. "|cFF0099FF]: >|cFFDD33FF" .. v .. "|cFF0099FF<|r"
+		end
+
+		table.insert( SSEventLog.debugLogs, logEntry )
+		logChatFrame:AddMessage( "Debug: " .. logEntry  )
 	end
 	)
 
@@ -245,6 +274,13 @@ function finishInit()
 	if type( SSEventLog.logs ) ~= "table" then
 		SSEventLog.logs = {}
 		logChatFrame:AddMessage( "SSEventLog.logs created" )
+	end
+
+	logChatFrame:AddMessage( "SSEventLog.debugLogs Type: " .. type( SSEventLog.debugLogs ) )
+
+	if type( SSEventLog.debugLogs ) ~= "table" then
+		SSEventLog.debugLogs = {}
+		logChatFrame:AddMessage( "SSEventLog.debugLogs created" )
 	end
 
 
@@ -304,6 +340,26 @@ function finishInit()
 	-- Location events
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED" )
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
+
+	-- Debugging event logs
+	Debugging_EventFrame:RegisterEvent( "TIME_PLAYED_MSG" )
+
+	Debugging_EventFrame:RegisterEvent( "GROUP_ROSTER_UPDATE" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_INVITE_REQUEST" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_INVITE_CANCEL" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_LEADER_CHANGED" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_LOOT_METHOD_CHANGED" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_MEMBERS_CHANGED" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_MEMBER_DISABLE" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_MEMBER_ENABLE" )
+	Debugging_EventFrame:RegisterEvent( "PARTY_REFER_A_FRIEND_UPDATED" )
+	Debugging_EventFrame:RegisterEvent( "UNIT_PHASE" )
+
+
+	-- RaF related events
+
+
+
 end
 
 -- UI_INFO_MESSAGE
