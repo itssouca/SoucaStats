@@ -1,4 +1,4 @@
-version = "00013"
+version = "00014"
 Listening_EventFrame = nil
 
 print( version )
@@ -15,7 +15,7 @@ local loggedIn = false
 local playedHeartbeatElapsed = 0
 local locationHeartbeatElapsed = 0
 
-local playedHeartbeatInterval = 300 -- 5 minutes
+local playedHeartbeatInterval = 900 -- 15 minutes
 local locationHeartbeatInterval = 30 -- 30 seconds
 
 
@@ -190,9 +190,22 @@ local prettyLoaded = loaded and "Yes" or "No"
 									"|cFF0099FF<|r"	
 
 				table.insert( SSEventLog.logs, logEntry )
-				logChatFrame:AddMessage( "SS" .. displayEntry  )
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
 			end
 			-- RequestTimePlayed()
+
+
+		elseif ( event == "CHECKPOINT_COMMENT" ) then		
+			local comment = ...
+			
+			local logEntry = logHeader .. "|" .. comment
+			local displayEntry = displayHeader .. " ### |cFF0099FFComment: >|cFFDD33FF" .. comment ..
+									"|cFF0099FF<|r"	
+
+			table.insert( SSEventLog.logs, logEntry )
+			logChatFrame:AddMessage( "SS: " .. displayEntry  )
+			
+			RequestTimePlayed()
 
 
 		elseif ( event == "UPDATE_CHAT_WINDOWS" ) then		
@@ -421,8 +434,18 @@ function heartbeatHandler( self, elapsed )
 end
 
 
-
 Listening_EventFrame:SetScript( "OnUpdate", heartbeatHandler )
+
+
+
+-- Register slash command
+SLASH_SOUCASTATS1 = '/sscp'
+
+function slashHandler( arg, editbox )
+	eventHandler( self, "CHECKPOINT_COMMENT", arg )
+end
+
+SlashCmdList["SOUCASTATS"] = slashHandler
 
 
 
