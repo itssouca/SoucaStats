@@ -1,4 +1,4 @@
-version = "00014"
+version = "00015"
 Listening_EventFrame = nil
 
 print( version )
@@ -93,15 +93,17 @@ local prettyLoaded = loaded and "Yes" or "No"
 					UnitXP( "player" ) .. "|" .. UnitXPMax( "player" ) .. "|" .. continentID ..
 					"|" .. zoneName .. "|" .. subZoneName .. "|" ..
 					mapX .. "," .. mapY .. "|" .. onTaxi
-			displayHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
-					"< P Time: >" .. prettyTime .. "< Lvl: >" .. UnitLevel( "player" ) .. "< XP: >" .. UnitXP( "player" ) ..
-					"< Lvl XP: >" .. UnitXPMax( "player" ) .. "< Continent: >" .. continent .. "< Zone: >" ..
-					zoneName .. "::" .. subZoneName .. "< Loc: (" ..
-					mapX .. "," .. mapY .. ") Taxi: >" .. onTaxi .. "<"
+			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: >|cFFDD33FF" .. serverTime ..
+					"|cFF0099FF< P Time: >|cFFDD33FF" .. prettyTime .. "|cFF0099FF< Lvl: >|cFFDD33FF" ..
+					UnitLevel( "player" ) .. "|cFF0099FF< XP: >|cFFDD33FF" .. UnitXP( "player" ) ..
+					"|cFF0099FF< Lvl XP: >|cFFDD33FF" .. UnitXPMax( "player" ) ..
+					"|cFF0099FF< Continent: >|cFFDD33FF" .. continent .. "|cFF0099FF< Zone: >|cFFDD33FF" ..
+					zoneName .. "|cFF0099FF::|cFFDD33FF" .. subZoneName .. "|cFF0099FF< Loc: (" ..
+					mapX .. "|cFF0099FF,|cFFDD33FF" .. mapY .. "|cFF0099FF) Taxi: >|cFFDD33FF" .. onTaxi .. "|cFF0099FF<|r"
 		else
 			logHeader = event .. "|" .. serverTime
-			displayHeader = "|cFFFF0000" .. event .. "|r - Time: >" .. serverTime ..
-					"< P Time: >" .. prettyTime .. "<"
+			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: >|cFFDD33FF" .. serverTime ..
+					"|cFF0099FF< P Time: >|cFFDD33FF" .. prettyTime .. "|cFF0099FF<|r"
 		end
 
 					
@@ -342,10 +344,13 @@ function finishInit()
 	local logEntry = "SS_INFO_VERSION|" .. serverTime .. "|" .. version .. "|" .. UnitName( "player" ) .. "|" ..
 						GetRealmName() .. "|" .. UnitClass( "player" ) .. "|" .. UnitRace( "player" ) ..
 						"|" .. factionGroup .. "|" .. UnitSex( "player" )
-	local displayEntry = "|cFFFF0000SS_INFO_VERSION|r - Time: >" .. serverTime .. "< P Time: >" .. prettyTime ..
-						"< Version: >" .. version .. "< Char: >" .. UnitName( "player" ) .. "< Realm: >" ..
-						GetRealmName() .. "< Class: >" .. UnitClass( "player" ) .. "< Race: >" .. UnitRace( "player" ) ..
-						"< Faction: >" .. factionGroup .. "< Sex: >" .. charSex .. "<"
+	local displayEntry = "|cFFFF0000SS_INFO_VERSION|r - |cFF0099FFTime: >|cFFDD33FF" .. serverTime ..
+						"|cFF0099FF< P Time: >|cFFDD33FF" .. prettyTime .. "|cFF0099FF< Version: >|cFFDD33FF" ..
+						version .. "|cFF0099FF< Char: >|cFFDD33FF" .. UnitName( "player" ) ..
+						"|cFF0099FF< Realm: >|cFFDD33FF" .. GetRealmName() .. "< Class: >" ..
+						UnitClass( "player" ) .. "< Race: >" .. UnitRace( "player" ) ..
+						"|cFF0099FF< Faction: >|cFFDD33FF" .. factionGroup .. "|cFF0099FF< Sex: >|cFFDD33FF" ..
+						charSex .. "|cFF0099FF<|r"
 
 
 	table.insert( SSEventLog.logs, logEntry )
