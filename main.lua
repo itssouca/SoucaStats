@@ -1,4 +1,4 @@
-version = "00015"
+version = "00016"
 Listening_EventFrame = nil
 
 print( version )
@@ -93,17 +93,17 @@ local prettyLoaded = loaded and "Yes" or "No"
 					UnitXP( "player" ) .. "|" .. UnitXPMax( "player" ) .. "|" .. continentID ..
 					"|" .. zoneName .. "|" .. subZoneName .. "|" ..
 					mapX .. "," .. mapY .. "|" .. onTaxi
-			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: >|cFFDD33FF" .. serverTime ..
-					"|cFF0099FF< P Time: >|cFFDD33FF" .. prettyTime .. "|cFF0099FF< Lvl: >|cFFDD33FF" ..
-					UnitLevel( "player" ) .. "|cFF0099FF< XP: >|cFFDD33FF" .. UnitXP( "player" ) ..
-					"|cFF0099FF< Lvl XP: >|cFFDD33FF" .. UnitXPMax( "player" ) ..
-					"|cFF0099FF< Continent: >|cFFDD33FF" .. continent .. "|cFF0099FF< Zone: >|cFFDD33FF" ..
-					zoneName .. "|cFF0099FF::|cFFDD33FF" .. subZoneName .. "|cFF0099FF< Loc: (" ..
-					mapX .. "|cFF0099FF,|cFFDD33FF" .. mapY .. "|cFF0099FF) Taxi: >|cFFDD33FF" .. onTaxi .. "|cFF0099FF<|r"
+			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: |cFFFF7633>|cFFDD33FF" .. serverTime ..
+					"|cFFFF7633<|cFF0099FF P Time: |cFFFF7633>|cFFDD33FF" .. prettyTime .. "|cFFFF7633<|cFF0099FF Lvl: |cFFFF7633>|cFFDD33FF" ..
+					UnitLevel( "player" ) .. "|cFFFF7633<|cFF0099FF XP: |cFFFF7633>|cFFDD33FF" .. UnitXP( "player" ) ..
+					"|cFFFF7633<|cFF0099FF Lvl XP: |cFFFF7633>|cFFDD33FF" .. UnitXPMax( "player" ) ..
+					"|cFFFF7633<|cFF0099FF Continent: |cFFFF7633>|cFFDD33FF" .. continent .. "|cFFFF7633<|cFF0099FF Zone: |cFFFF7633>|cFFDD33FF" ..
+					zoneName .. "|cFFFF7633::|cFFDD33FF" .. subZoneName .. "|cFFFF7633<|cFF0099FF Loc: |cFFFF7633(|cFFDD33FF" ..
+					mapX .. "|cFFFF7633,|cFFDD33FF" .. mapY .. "|cFFFF7633)|cFF0099FF Taxi: |cFFFF7633>|cFFDD33FF" .. onTaxi .. "|cFFFF7633<|r"
 		else
 			logHeader = event .. "|" .. serverTime
-			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: >|cFFDD33FF" .. serverTime ..
-					"|cFF0099FF< P Time: >|cFFDD33FF" .. prettyTime .. "|cFF0099FF<|r"
+			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: |cFFFF7633>|cFFDD33FF" .. serverTime ..
+					"|cFFFF7633<|cFF0099FF P Time: |cFFFF7633>|cFFDD33FF" .. prettyTime .. "|cFFFF7633<|r"
 		end
 
 					
@@ -123,7 +123,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local newLevel = ...
 			
 			local logEntry = logHeader .. "|" .. newLevel
-			local displayEntry = displayHeader .. " ### |cFF0099FFNew Lvl: >|cFFDD33FF" .. newLevel .. "|cFF0099FF<|r"
+			local displayEntry = displayHeader .. " ### |cFF0099FFNew Lvl: |cFFFF7633>|cFFDD33FF" .. newLevel .. "|cFFFF7633<|r"
 
 			table.insert( SSEventLog.logs, logEntry )
 			logChatFrame:AddMessage( "SS: " .. displayEntry )
@@ -135,8 +135,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local totalTime, levelTime = ...
 
 			local logEntry = logHeader .. "|" .. totalTime .. "|" .. levelTime
-			local displayEntry = displayHeader .. " ### |cFF0099FFPlayed: >|cFFDD33FF" .. totalTime ..
-								"|cFF0099FF< Lvl Played: >|cFFDD33FF" .. levelTime .. "|cFF0099FF<|r"
+			local displayEntry = displayHeader .. " ### |cFF0099FFPlayed: |cFFFF7633>|cFFDD33FF" .. totalTime ..
+								"|cFFFF7633<|cFF0099FF Lvl Played: |cFFFF7633>|cFFDD33FF" .. levelTime .. "|cFFFF7633<|r"
 
 			table.insert( SSEventLog.logs, logEntry )
 			logChatFrame:AddMessage( "SS: " .. displayEntry  )
@@ -146,8 +146,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local questSlot, questId = ...		
 
 			local logEntry = logHeader .. "|" .. questSlot .. "|" .. questId
-			local displayEntry = displayHeader .. " ### |cFF0099FFQuest Slot: >|cFFDD33FF" .. questSlot ..
-					"|cFF0099FF< Quest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"
+			local displayEntry = displayHeader .. " ### |cFF0099FFQuest Slot: |cFFFF7633>|cFFDD33FF" .. questSlot ..
+					"|cFFFF7633<|cFF0099FF Quest ID: |cFFFF7633>|cFFDD33FF" .. questId .. "|cFFFF7633<|r"
 
 			table.insert( SSEventLog.logs, logEntry )
 			logChatFrame:AddMessage( "SS: " .. displayEntry  )
@@ -159,7 +159,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local questId = ...		
 
 			local logEntry = logHeader .. "|" .. questId			
-			local displayEntry = displayHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId .. "|cFF0099FF<|r"			
+			local displayEntry = displayHeader .. " ### |cFF0099FFQuest ID: |cFFFF7633>|cFFDD33FF" .. questId .. "|cFFFF7633<|r"			
 
 			table.insert( SSEventLog.logs, logEntry )
 			logChatFrame:AddMessage( "SS: " .. displayEntry  )
@@ -171,9 +171,9 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local questId, questXP, questCopper = ...		
 
 			local logEntry = logHeader .. "|" .. questId .. "|" .. questXP .. "|" .. questCopper
-			local displayEntry = displayHeader .. " ### |cFF0099FFQuest ID: >|cFFDD33FF" .. questId ..
-					"|cFF000FF< QuestXP: >" .. questXP .. "|cFF0099FF< QuestCopper: >|cFFDD33FF" ..
-					questCopper .. "|cFF0099FF<|r"
+			local displayEntry = displayHeader .. " ### |cFF0099FFQuest ID: |cFFFF7633>|cFFDD33FF" .. questId ..
+					"|cFFFF7633<|cFF0099FF QuestXP: >" .. questXP .. "|cFF0099FF< QuestCopper: |cFFFF7633>|cFFDD33FF" ..
+					questCopper .. "|cFFFF7633<|r"
 
 			table.insert( SSEventLog.logs, logEntry )
 			logChatFrame:AddMessage( "SS: " .. displayEntry  )
@@ -188,8 +188,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 				local afkState = UnitIsAFK( "player" ) and "Y" or "N"
 
 				local logEntry = logHeader .. "|" .. afkState
-				local displayEntry = displayHeader .. " ### |cFF0099FFAFK: >|cFFDD33FF" .. afkState ..
-									"|cFF0099FF<|r"	
+				local displayEntry = displayHeader .. " ### |cFF0099FFAFK: |cFFFF7633>|cFFDD33FF" .. afkState ..
+									"|cFFFF7633<|r"	
 
 				table.insert( SSEventLog.logs, logEntry )
 				logChatFrame:AddMessage( "SS: " .. displayEntry  )
@@ -201,8 +201,8 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local comment = ...
 			
 			local logEntry = logHeader .. "|" .. comment
-			local displayEntry = displayHeader .. " ### |cFF0099FFComment: >|cFFDD33FF" .. comment ..
-									"|cFF0099FF<|r"	
+			local displayEntry = displayHeader .. " ### |cFF0099FFComment: |cFFFF7633>|cFFDD33FF" .. comment ..
+									"|cFFFF7633<|r"	
 
 			table.insert( SSEventLog.logs, logEntry )
 			logChatFrame:AddMessage( "SS: " .. displayEntry  )
@@ -235,6 +235,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 		elseif ( 	event == "UNIT_QUEST_LOG_CHANGED" or
 					event == "ZONE_CHANGED_NEW_AREA" or
 					event == "ZONE_CHANGED" or
+					event == "ZONE_CHANGED_INDOORS" or
 					event == "HEARTBEAT_LOCATION" ) then		
 
 			table.insert( SSEventLog.logs, logHeader )
@@ -275,7 +276,7 @@ function debugHandler( self, event, ... )
 		end
 
 		logEntry = logEntry .. "|" .. k .. "*" .. prettyV
-		displayEntry = displayEntry .. " |cFF0099FFarg[|cFFDD33FF" .. k .. "|cFF0099FF]: >|cFFDD33FF" .. prettyV .. "|cFF0099FF<|r"
+		displayEntry = displayEntry .. " |cFF0099FFarg|cFFFF7633[|cFFDD33FF" .. k .. "|cFF0099FF]: |cFFFF7633>|cFFDD33FF" .. prettyV .. "|cFFFF7633<|r"
 	end
 
 	table.insert( SSEventLog.debugLogs, logEntry )
@@ -289,7 +290,7 @@ function updateLoggingChatWindow()
 	for i = 1, NUM_CHAT_WINDOWS do
 		local windowName = GetChatWindowInfo( i )
 
-		logChatFrame:AddMessage( "ChatWindow[|cFFDD33FF" .. i .. "|r]: \"|cFFDD33FF" .. windowName .. "|r\"" )
+		logChatFrame:AddMessage( "ChatWindow|cFFFF7633[|cFFDD33FF" .. i .. "|cFFFF7633]|r: \"|cFFDD33FF" .. windowName .. "|r\"" )
 
 	 	if  windowName == "SS Log" then
 	 		logChatFrame:AddMessage( "Switching output to \"SS Log\" frame at index " .. i )
@@ -344,13 +345,13 @@ function finishInit()
 	local logEntry = "SS_INFO_VERSION|" .. serverTime .. "|" .. version .. "|" .. UnitName( "player" ) .. "|" ..
 						GetRealmName() .. "|" .. UnitClass( "player" ) .. "|" .. UnitRace( "player" ) ..
 						"|" .. factionGroup .. "|" .. UnitSex( "player" )
-	local displayEntry = "|cFFFF0000SS_INFO_VERSION|r - |cFF0099FFTime: >|cFFDD33FF" .. serverTime ..
-						"|cFF0099FF< P Time: >|cFFDD33FF" .. prettyTime .. "|cFF0099FF< Version: >|cFFDD33FF" ..
-						version .. "|cFF0099FF< Char: >|cFFDD33FF" .. UnitName( "player" ) ..
-						"|cFF0099FF< Realm: >|cFFDD33FF" .. GetRealmName() .. "< Class: >" ..
-						UnitClass( "player" ) .. "< Race: >" .. UnitRace( "player" ) ..
-						"|cFF0099FF< Faction: >|cFFDD33FF" .. factionGroup .. "|cFF0099FF< Sex: >|cFFDD33FF" ..
-						charSex .. "|cFF0099FF<|r"
+	local displayEntry = "|cFFFF0000SS_INFO_VERSION|r - |cFF0099FFTime: |cFFFF7633>|cFFDD33FF" .. serverTime ..
+						"|cFFFF7633<|cFF0099FF P Time: |cFFFF7633>|cFFDD33FF" .. prettyTime .. "|cFFFF7633<|cFF0099FF Version: |cFFFF7633>|cFFDD33FF" ..
+						version .. "|cFFFF7633<|cFF0099FF Char: |cFFFF7633>|cFFDD33FF" .. UnitName( "player" ) ..
+						"|cFFFF7633<|cFF0099FF Realm: |cFFFF7633>|cFFDD33FF" .. GetRealmName() .. "|cFFFF7633<|cFF0099FF Class: |cFFFF7633>|cFFDD33FF" ..
+						UnitClass( "player" ) .. "|cFFFF7633<|cFF0099FF Race: |cFFFF7633>|cFFDD33FF" .. UnitRace( "player" ) ..
+						"|cFFFF7633<|cFF0099FF Faction: |cFFFF7633>|cFFDD33FF" .. factionGroup .. "|cFFFF7633<|cFF0099FF Sex: |cFFFF7633>|cFFDD33FF" ..
+						charSex .. "|cFFFF7633<|r"
 
 
 	table.insert( SSEventLog.logs, logEntry )
@@ -393,6 +394,7 @@ function finishInit()
 	-- Location events
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED" )
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
+	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED_INDOORS" )
 
 	-- Debugging event logs
 	-- Debugging_EventFrame:RegisterEvent( "TIME_PLAYED_MSG" )
