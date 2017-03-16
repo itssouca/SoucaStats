@@ -1,4 +1,4 @@
-version = "00016"
+version = "00017"
 Listening_EventFrame = nil
 
 print( version )
@@ -84,18 +84,19 @@ local prettyLoaded = loaded and "Yes" or "No"
 		local serverTime = GetServerTime()
 		local prettyTime = date( "%c", serverTime )
 		local onTaxi = UnitOnTaxi( "player" ) and "Y" or "N"
+		local unitLevel = UnitLevel( "player" )
 		
 		local logHeader
 		local displayHeader
 
 		if ( loggedIn == true ) then
-			logHeader = event .. "|" .. serverTime .. "|" .. UnitLevel( "player" ) .. "|" ..
+			logHeader = event .. "|" .. serverTime .. "|" .. unitLevel .. "|" ..
 					UnitXP( "player" ) .. "|" .. UnitXPMax( "player" ) .. "|" .. continentID ..
 					"|" .. zoneName .. "|" .. subZoneName .. "|" ..
 					mapX .. "," .. mapY .. "|" .. onTaxi
 			displayHeader = "|cFFFF0000" .. event .. "|r - |cFF0099FFTime: |cFFFF7633>|cFFDD33FF" .. serverTime ..
 					"|cFFFF7633<|cFF0099FF P Time: |cFFFF7633>|cFFDD33FF" .. prettyTime .. "|cFFFF7633<|cFF0099FF Lvl: |cFFFF7633>|cFFDD33FF" ..
-					UnitLevel( "player" ) .. "|cFFFF7633<|cFF0099FF XP: |cFFFF7633>|cFFDD33FF" .. UnitXP( "player" ) ..
+					unitLevel .. "|cFFFF7633<|cFF0099FF XP: |cFFFF7633>|cFFDD33FF" .. UnitXP( "player" ) ..
 					"|cFFFF7633<|cFF0099FF Lvl XP: |cFFFF7633>|cFFDD33FF" .. UnitXPMax( "player" ) ..
 					"|cFFFF7633<|cFF0099FF Continent: |cFFFF7633>|cFFDD33FF" .. continent .. "|cFFFF7633<|cFF0099FF Zone: |cFFFF7633>|cFFDD33FF" ..
 					zoneName .. "|cFFFF7633::|cFFDD33FF" .. subZoneName .. "|cFFFF7633<|cFF0099FF Loc: |cFFFF7633(|cFFDD33FF" ..
@@ -208,6 +209,96 @@ local prettyLoaded = loaded and "Yes" or "No"
 			logChatFrame:AddMessage( "SS: " .. displayEntry  )
 			
 			RequestTimePlayed()
+
+
+		elseif ( event == "UNIT_SPELLCAST_START" ) then		
+			local unitName, unitSpell = ...
+			local textLevel = '' .. unitLevel .. ''
+
+			if ( unitName == "player" ) then
+				prepareChild( SSEventLog.counts.spells, textLevel )
+				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
+
+				SSEventLog.counts.spells[textLevel][unitSpell].start = ( SSEventLog.counts.spells[textLevel][unitSpell].start or 0 ) + 1
+
+				local logEntry = logHeader .. "|" .. unitSpell
+				local displayEntry = displayHeader .. " ### |cFF0099FFStart Cast: |cFFFF7633>|cFFDD33FF" .. unitSpell ..
+										"|cFFFF7633<|r"	
+
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
+			end
+
+
+		elseif ( event == "UNIT_SPELLCAST_INTERRUPTED" ) then		
+			local unitName, unitSpell = ...
+			local textLevel = '' .. unitLevel .. ''
+			
+			if ( unitName == "player" ) then
+				prepareChild( SSEventLog.counts.spells, textLevel )
+				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
+
+				SSEventLog.counts.spells[textLevel][unitSpell].interrupted = ( SSEventLog.counts.spells[textLevel][unitSpell].interrupted or 0 ) + 1
+
+				local logEntry = logHeader .. "|" .. unitSpell
+				local displayEntry = displayHeader .. " ### |cFF0099FFSpell Interrupted: |cFFFF7633>|cFFDD33FF" .. unitSpell ..
+										"|cFFFF7633<|r"	
+
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
+			end
+
+
+		elseif ( event == "UNIT_SPELLCAST_SUCCEEDED" ) then		
+			local unitName, unitSpell = ...
+			local textLevel = '' .. unitLevel .. ''
+			
+			if ( unitName == "player" ) then
+				prepareChild( SSEventLog.counts.spells, textLevel )
+				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
+
+				SSEventLog.counts.spells[textLevel][unitSpell].succeeded = ( SSEventLog.counts.spells[textLevel][unitSpell].succeeded or 0 ) + 1
+
+				local logEntry = logHeader .. "|" .. unitSpell
+				local displayEntry = displayHeader .. " ### |cFF0099FFSpell Succeeded: |cFFFF7633>|cFFDD33FF" .. unitSpell ..
+										"|cFFFF7633<|r"	
+
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
+			end
+
+
+		elseif ( event == "UNIT_SPELLCAST_FAIL" ) then		
+			local unitName, unitSpell = ...
+			local textLevel = '' .. unitLevel .. ''
+			
+			if ( unitName ~= "player" ) then
+				prepareChild( SSEventLog.counts.spells, textLevel )
+				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
+
+				SSEventLog.counts.spells[textLevel][unitSpell].fail = ( SSEventLog.counts.spells[textLevel][unitSpell].fail or 0 ) + 1
+
+				local logEntry = logHeader .. "|" .. unitSpell
+				local displayEntry = displayHeader .. " ### |cFF0099FFSpell Failed: |cFFFF7633>|cFFDD33FF" .. unitSpell ..
+										"|cFFFF7633<|r"	
+
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
+			end
+
+
+		elseif ( event == "UNIT_SPELLCAST_STOP" ) then		
+			local unitName, unitSpell = ...
+			local textLevel = '' .. unitLevel .. ''
+			
+			if ( unitName ~= "player" ) then
+				prepareChild( SSEventLog.counts.spells, textLevel )
+				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
+
+				SSEventLog.counts.spells[textLevel][unitSpell].stop = ( SSEventLog.counts.spells[textLevel][unitSpell].stop or 0 ) + 1
+
+				local logEntry = logHeader .. "|" .. unitSpell
+				local displayEntry = displayHeader .. " ### |cFF0099FFSpell Stop: |cFFFF7633>|cFFDD33FF" .. unitSpell ..
+										"|cFFFF7633<|r"	
+
+				logChatFrame:AddMessage( "SS: " .. displayEntry  )
+			end
 
 
 		elseif ( event == "UPDATE_CHAT_WINDOWS" ) then		
@@ -330,6 +421,15 @@ function finishInit()
 		logChatFrame:AddMessage( "SSEventLog.debugLogs created" )
 	end
 
+	logChatFrame:AddMessage( "SSEventLog.counts Type: " .. type( SSEventLog.counts ) )
+
+	if type( SSEventLog.counts ) ~= "table" then
+		SSEventLog.counts = {}
+		logChatFrame:AddMessage( "SSEventLog.counts created" )
+	end
+
+	prepareChild( SSEventLog.counts, 'spells' )
+
 
 	-- Log Version
 	local serverTime = GetServerTime()
@@ -396,6 +496,16 @@ function finishInit()
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
 	Listening_EventFrame:RegisterEvent( "ZONE_CHANGED_INDOORS" )
 
+	-- Spellcasting
+	Listening_EventFrame:RegisterEvent( "UNIT_SPELLCAST_START" )
+	Listening_EventFrame:RegisterEvent( "UNIT_SPELLCAST_INTERRUPTED" )
+	Listening_EventFrame:RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED" )
+	Listening_EventFrame:RegisterEvent( "UNIT_SPELLCAST_FAILED" )
+	Listening_EventFrame:RegisterEvent( "UNIT_SPELLCAST_STOP" )
+
+
+	-- UPDATE_SHAPESHIFT_FORM
+
 	-- Debugging event logs
 	-- Debugging_EventFrame:RegisterEvent( "TIME_PLAYED_MSG" )
 
@@ -455,6 +565,12 @@ end
 SlashCmdList["SOUCASTATS"] = slashHandler
 
 
+
+function prepareChild( parent, child )
+	if type( parent[child] ) ~= "table" then
+		parent[child] = {}
+	end
+end
 
 -- UI_INFO_MESSAGE
 -- Arg1: 287 ??
