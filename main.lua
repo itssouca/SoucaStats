@@ -1,4 +1,4 @@
-version = "00017"
+version = "00018"
 Listening_EventFrame = nil
 
 print( version )
@@ -269,7 +269,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local unitName, unitSpell = ...
 			local textLevel = '' .. unitLevel .. ''
 			
-			if ( unitName ~= "player" ) then
+			if ( unitName == "player" ) then
 				prepareChild( SSEventLog.counts.spells, textLevel )
 				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
 
@@ -287,7 +287,7 @@ local prettyLoaded = loaded and "Yes" or "No"
 			local unitName, unitSpell = ...
 			local textLevel = '' .. unitLevel .. ''
 			
-			if ( unitName ~= "player" ) then
+			if ( unitName == "player" ) then
 				prepareChild( SSEventLog.counts.spells, textLevel )
 				prepareChild( SSEventLog.counts.spells[textLevel], unitSpell )
 
